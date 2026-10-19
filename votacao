@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Urna do Grêmio Estudantil</title>
+<style>
+:root{--blue:#174ea6;--blue2:#0b3477;--green:#16834a;--bg:#eef3f8;--ink:#172334;--muted:#5c6878;--line:#d7e0ea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(120deg,var(--blue2),var(--blue));color:white;padding:22px 16px}
+.head{max-width:1000px;margin:auto;display:flex;align-items:center;gap:14px}.logo{width:54px;height:54px;border-radius:14px;background:#ffffff20;display:grid;place-items:center;font-size:28px}
+h1{font-size:clamp(21px,4vw,30px);margin:0 0 5px}.sub{margin:0;color:#e0eaff;font-size:14px}
+main{max-width:1000px;margin:24px auto;padding:0 14px 35px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.7fr);gap:18px}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 22px #203a5610}
+h2{margin:0 0 8px;font-size:21px}.hint{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 17px}
+.display{min-height:135px;border:2px solid #d9e3ef;border-radius:12px;padding:18px;margin:14px 0;background:#f9fbfe}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:bold}.number{font-size:36px;font-weight:800;letter-spacing:8px;min-height:44px;margin:8px 0}
+.candidate{font-size:19px;font-weight:bold;margin-top:8px}.members{font-size:13px;color:var(--muted);margin-top:5px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:360px;margin:0 auto 15px}
+.key{border:1px solid #cbd6e3;border-radius:10px;background:#fff;font-size:23px;font-weight:bold;padding:13px;cursor:pointer;box-shadow:0 2px 0 #d7e0e8}
+.key:hover{background:#f0f5fc}.key:active{transform:translateY(1px)}.key.small{font-size:13px;text-transform:uppercase}.key.blank{background:#f0f2f5}.key.correct{background:#fef3c7}.key.confirm{background:#d9f7e5;border-color:#91d4ae}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.status{min-height:23px;color:var(--green);font-weight:bold;text-align:center;font-size:14px;margin:10px 0}
+button:focus-visible,input:focus-visible{outline:3px solid #f4b400;outline-offset:2px}
+.info{font-size:13px;color:var(--muted);line-height:1.5}.badge{display:inline-block;background:#e6f5ec;color:#176b3c;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:bold;margin-bottom:12px}
+.admin details{margin-top:15px;border-top:1px solid var(--line);padding-top:14px}.admin summary{cursor:pointer;font-weight:bold}.field{display:block;margin:12px 0 5px;font-size:13px;font-weight:bold}.admin input{width:100%;padding:10px;border:1px solid #cbd6e3;border-radius:8px;font:inherit}
+.btn{border:0;border-radius:9px;padding:11px 14px;font-weight:bold;cursor:pointer;background:var(--blue);color:white}.btn.secondary{background:#e8eef6;color:#20334b}.btn.danger{background:#a52c2c}
+.result{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #edf0f4;font-size:14px}.result:last-child{border-bottom:0}.bar{height:7px;background:#e7edf4;border-radius:8px;overflow:hidden;margin-top:7px}.bar span{display:block;height:100%;background:var(--blue);width:0}
+.notice{margin-top:15px;padding:12px;border-radius:10px;background:#fff7df;color:#684b00;font-size:12px;line-height:1.5}
+footer{text-align:center;color:#687587;font-size:12px;padding:0 15px 25px}
+@media(max-width:760px){main{grid-template-columns:1fr;margin-top:14px}.panel{padding:16px}.head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="head"><div class="logo" aria-hidden="true">🗳️</div><div><h1>Urna do Grêmio Estudantil</h1><p class="sub">Eleição estudantil • Vote com consciência!</p></div></div></header>
+<main>
+<section class="panel">
+  <span class="badge">SIMULAÇÃO DE VOTAÇÃO</span>
+  <h2>Identifique sua chapa</h2>
+  <p class="hint">Digite o número da chapa no teclado. Confira as informações e, quando estiver tudo certo, confirme seu voto.</p>
+  <div class="display" aria-live="polite">
+    <div class="label">Número da chapa</div><div class="number" id="digits">— —</div>
+    <div class="label">Nome da chapa</div><div class="candidate" id="candidate">Digite o número para começar</div>
+    <div class="members" id="members"></div>
+  </div>
+  <div class="keys" aria-label="Teclado numérico">
+    <button class="key" data-digit="1">1</button><button class="key" data-digit="2">2</button><button class="key" data-digit="3">3</button>
+    <button class="key" data-digit="4">4</button><button class="key" data-digit="5">5</button><button class="key" data-digit="6">6</button>
+    <button class="key" data-digit="7">7</button><button class="key" data-digit="8">8</button><button class="key" data-digit="9">9</button>
+    <button class="key small blank" id="blank">Branco</button><button class="key" data-digit="0">0</button><button class="key small correct" id="clear">Corrige</button>
+  </div>
+  <div class="actions"><button class="btn secondary" id="reset">Limpar tela</button><button class="btn" id="confirm">CONFIRMA</button></div>
+  <div class="status" id="status" role="status"></div>
+</section>
+<aside class="panel">
+  <h2>Chapas inscritas</h2><p class="hint">Exemplos editáveis para testar o funcionamento.</p>
+  <div id="list"></div>
+  <div class="notice"><strong>Atenção:</strong> este arquivo é uma demonstração local. Os votos ficam neste navegador e não há autenticação, sigilo garantido nem proteção contra alteração. Para uma eleição oficial, use um sistema hospedado e auditável, com regras definidas pela comissão eleitoral.</div>
+  <div class="admin">
+    <details>
+      <summary>Área da comissão — editar chapas</summary>
+      <p class="info">Edite os exemplos antes de usar a simulação. Alterar as chapas zera a apuração local.</p>
+      <label class="field" for="n1">Chapa 10 — nome</label><input id="n1" value="Voz Na Ativa">
+      <label class="field" for="m1">Integrantes / descrição</label><input id="m1" value="Representação, diálogo e participação">
+      <label class="field" for="n2">Chapa 27 — nome</label><input id="n2" value="Nova Geração">
+      <label class="field" for="m2">Integrantes / descrição</label><input id="m2" value="Ideias novas para nossa escola">
+      <label class="field" for="n3">Chapa 18 — nome</label><input id="n3" value="Chapa União">
+      <label class="field" for="m3">Integrantes / descrição</label><input id="m3" value="Cultura, esporte e projetos">
+      <label class="field" for="n4">Chapa 40 — nome</label><input id="n4" value="Nossa Voz">
+      <label class="field" for="m4">Integrantes / descrição</label><input id="m4" value="Mais participação, respeito e atividades">
+      <button class="btn" id="save">Salvar chapas</button>
+      <h3 style="margin:20px 0 6px">Apuração local</h3><div id="results" class="info">Nenhum voto registrado.</div>
+      <p class="info" id="total"></p>
+      <button class="btn secondary" id="export">Baixar apuração (.csv)</button>
+      <button class="btn danger" id="erase">Zerar votos</button>
+    </details>
+  </div>
+</aside>
+</main>
+<footer>Projeto demonstrativo para grêmio estudantil • Personalize as chapas antes da simulação.</footer>
+<script>
+const defaults={
+ "10":{name:"União Estudantil",members:"Representação, diálogo e participação"},
+ "27":{name:"Voz dos Alunos",members:"Ideias novas para nossa escola"},
+ "18":{name:"Juntos pelo Futuro",members:"Cultura, esporte e projetos"},
+ "40":{name:"Renovação na Escola",members:"Mais participação, respeito e atividades"}
+};
+let teams=JSON.parse(JSON.stringify(defaults)), votes={"10":0,"27":0,"18":0,"40":0,"BRANCO":0}, entry="", chosen=null;
+const $=id=>document.getElementById(id);
+function render(){
+ $("digits").textContent=entry?entry.padEnd(2,"_").split("").join(" "):"— —";
+ chosen=teams[entry]||null;
+ $("candidate").textContent=chosen?chosen.name:(entry?"Chapa não encontrada":"Digite o número para começar");
+ $("members").textContent=chosen?chosen.members:"";
+ $("list").innerHTML=Object.entries(teams).map(([num,t])=>`<div class="result"><div><strong>${num} — ${esc(t.name)}</strong><div class="info">${esc(t.members)}</div></div></div>`).join("");
+ renderResults();
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function reset(msg=""){entry="";$("status").textContent=msg;render();}
+document.querySelectorAll("[data-digit]").forEach(b=>b.addEventListener("click",()=>{if(entry.length<2)entry+=b.dataset.digit;$("status").textContent="";render();}));
+$("clear").onclick=()=>reset("Digite o número novamente.");
+$("reset").onclick=()=>reset();
+$("blank").onclick=()=>{entry="BRANCO";chosen=null;$("digits").textContent="BRANCO";$("candidate").textContent="Voto em branco";$("members").textContent="Confirme para registrar o voto em branco.";$("status").textContent="";};
+$("confirm").onclick=()=>{
+ if(entry==="BRANCO"){votes.BRANCO++;reset("Voto em branco registrado nesta demonstração. Obrigado por votar!");return;}
+ if(!teams[entry]){$("status").textContent="Selecione um número de chapa válido antes de confirmar.";return;}
+ const name=teams[entry].name;votes[entry]=(votes[entry]||0)+1;reset("Voto registrado para “"+name+"”. Obrigado por participar!");
+};
+function renderResults(){
+ const keys=Object.keys(teams).concat(["BRANCO"]),total=Object.values(votes).reduce((a,b)=>a+b,0);
+ $("results").innerHTML=keys.map(k=>{let n=votes[k]||0,p=total?Math.round(n/total*100):0,label=k==="BRANCO"?"Votos em branco":k+" — "+teams[k].name;return `<div class="result"><div style="width:100%"><div style="display:flex;justify-content:space-between;gap:8px"><span>${esc(label)}</span><strong>${n}</strong></div><div class="bar"><span style="width:${p}%"></span></div></div></div>`}).join("");
+ $("total").textContent="Total de votos registrados: "+total;
+}
+$("save").onclick=()=>{
+ const next={"10":{name:$("n1").value.trim()||"Chapa 10",members:$("m1").value.trim()},"27":{name:$("n2").value.trim()||"Chapa 20",members:$("m2").value.trim()},"18":{name:$("n3").value.trim()||"Chapa 40",members:$("m3").value.trim()}};
+ if(new Set(Object.values(next).map(t=>t.name.toLowerCase())).size<3){alert("Use nomes diferentes para cada chapa.");return;}
+ teams=next;votes={"10":0,"27":0,"18":0,"BRANCO":0};reset("Chapas atualizadas; a apuração local foi zerada.");render();
+};
+$("erase").onclick=()=>{if(confirm("Tem certeza de que deseja zerar a apuração local?")){votes={"10":0,"27":0,"18":0,"40":0,"BRANCO":0};renderResults();$("status").textContent="Apuração zerada.";}}
+$("export").onclick=()=>{
+ const rows=[["Opção","Votos"],...Object.keys(teams).map(k=>[k+" - "+teams[k].name,votes[k]||0]),["Voto em branco",votes.BRANCO||0]];
+ const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"}));a.download="apuracao-gremio.csv";a.click();URL.revokeObjectURL(a.href);
+};
+render();
+</script>
+</body>
+</html>
